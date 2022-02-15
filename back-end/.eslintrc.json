@@ -1,0 +1,11 @@
+{
+  "root": true,
+  "extends": ["airbnb-base", "eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"]
+  }
+}
