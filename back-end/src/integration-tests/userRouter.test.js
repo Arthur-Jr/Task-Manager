@@ -16,17 +16,19 @@ const DB_COLLECTION = 'users';
 
 describe('Testes da rota "users"', () => {
   let connectionMock;
-  const USER_EXAMPLE = { email: 'test@email.com', name: 'test', password: 'test123'};
+  const USER_EXAMPLE = { email: 'test@email.com', name: 'test', password: '123456'};
 
   before(async () => {
     connectionMock = await getConnection();
     sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+    sinon.stub(console, 'log');
   });
 
   after(async () => {
     await connectionMock.db(DB_NAME).collection(DB_COLLECTION).deleteMany({});
     await connectionMock.db(DB_NAME).collection(DB_COLLECTION).drop();
     MongoClient.connect.restore();
+    console.log.restore();
   });
 
   describe('Testes de cadastro de usuário', () => {
@@ -55,8 +57,8 @@ describe('Testes da rota "users"', () => {
         expect(response.body).to.have.property('user');
       });
 
-      it('Na propriedade "user" deve existir um "_id"', () => {
-        expect(response.body.user).to.have.property('_id');
+      it('Na propriedade "user" deve existir um "id"', () => {
+        expect(response.body.user).to.have.property('id');
       });
     });
 
@@ -108,7 +110,7 @@ describe('Testes da rota "users"', () => {
       before(async () => {
         await registerUser(USER_EXAMPLE.email, USER_EXAMPLE.name, USER_EXAMPLE.password);
 
-        it('Deve retornar o código de status 400', () => {
+        it('Deve retornar o código de status 409', () => {
           expect(response).to.have.status(CONFLICT);
         });
   
