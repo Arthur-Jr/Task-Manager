@@ -20,6 +20,7 @@ describe('Testes da rota "tasks".', () => {
   let connectionMock;
   let loginResponse;
   let registerResponse;
+  let taskId;
 
   before(async () => {
     connectionMock = await getConnection();
@@ -61,6 +62,8 @@ describe('Testes da rota "tasks".', () => {
     describe('Quando a "task" é registrada com sucesso.', () => {
       before(async () => {
         await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, loginResponse.body.token);
+
+        taskId = registerTask.body.id;
       });
 
       it('Deve retornar o código de status 201', () => {
@@ -193,7 +196,7 @@ describe('Testes da rota "tasks".', () => {
         expect(response).to.have.status(HTTP_OK_STATUS);
       });
 
-      it('Deve retornar um objeto', () => {
+      it('Deve retornar um array', () => {
         expect(response.body).to.be.a('array');
       });
 
@@ -257,6 +260,137 @@ describe('Testes da rota "tasks".', () => {
 
       it('A propriedade "message" deve ser igual a "Expired or invalid token"', () => {
         expect(response.body.message).to.be.equal('Expired or invalid token');
+      });
+    });
+  });
+
+  describe('Teste de edição de "tasks".', () => {
+    let response;
+
+    const editTasksRequest = async ({ title, description, status }, token) => {
+      response = await chai.request(server)
+      .put(`/tasks/${taskId}`)
+      .set('authorization', token)
+      .send({ title, description, status });
+    };
+
+    describe('Quando a "task" é editada com sucesso.', () => {
+      before(async () => {
+        await editTasksRequest(
+          { title: 'Fazer testes', description: undefined, status: 'em andamento' },
+          loginResponse.body.token
+        );
+      });
+
+      it('Deve retornar o código de status 200', () => {
+        expect(response).to.have.status(HTTP_OK_STATUS);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "_id"', () => {
+        expect(response.body).to.have.property('_id');
+      });
+
+      it('Deve possuir a propriedade "userId"', () => {
+        expect(response.body[0]).to.have.property('userId');
+        expect(response.body[0].userId).to.be.equal(registerResponse.body.user.id);
+      });
+
+      it('Deve possuir a propriedade "insertedDate"', () => {
+        expect(response.body[0]).to.have.property('insertedDate');
+      });
+
+      it('Deve possuir o novo "title" e o novo "status', () => {
+        expect(response.body.title).to.be.equal('Fazer testes');
+        expect(response.body.status).to.be.equal('em andamento');
+      });
+    });
+
+    describe('Quando o campo "title" não for valido.', () => {
+      before(async () => {
+        await editTasksRequest(
+          { title: undefined, description: undefined, status: 'em andamento' },
+          loginResponse.body.token
+        );
+      });
+
+      it('Deve retornar o código de status 400', () => {
+        expect(response).to.have.status(BAD_REQUEST);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a ""title" is required"', () => {
+        expect(response.body.message).to.be.equal('"title" is required');
+      });
+    });
+
+    describe('Quando o campo "status" não for valido.', () => {
+      before(async () => {
+        await registerTask(
+          { title: 'Fazer testes', description: undefined, status: undefined },
+          loginResponse.body.token
+        );
+      });
+
+      it('Deve retornar o código de status 400', () => {
+        expect(response).to.have.status(BAD_REQUEST);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a ""status" is required"', () => {
+        expect(response.body.message).to.be.equal('"status" is required');
+      });
+    });
+
+    describe('Quando o "authorization" não for o do usuário correto.', async () => {
+      await chai.request(server).post('/users')
+      .send({
+        email: 'test2@email.com',
+        name: 'test2',
+        password: USER_EXAMPLE.password,
+      });
+  
+      const newLoginResponse = await chai.request(server)
+      .post('/login').send({ email: 'test2@email.com', password: USER_EXAMPLE.password, });
+
+      before(async () => {
+        await editTasksRequest(
+          { title: 'Fazer testes 2', description: undefined, status: 'pronto' },
+          newLoginResponse.body.token
+        );
+      });
+
+      it('Deve retornar o código de status 401', () => {
+        expect(response).to.have.status(UNAUTHORIZED);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a "invalid token"', () => {
+        expect(response.body.message).to.be.equal('invalid token');
       });
     });
   });
