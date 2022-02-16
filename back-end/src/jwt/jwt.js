@@ -16,9 +16,9 @@ const decodeToken = (token) => {
   try {
     return jwt.verify(token, secret);
   } catch (error) {
-    const err = new Error(error.message);
+    const err = new Error('Expired or invalid token');
     err.status = UNAUTHORIZED;
-    err.message = error.message;
+    err.message = 'Expired or invalid token';
     throw err;
   }
 };
