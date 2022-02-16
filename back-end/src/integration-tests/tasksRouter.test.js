@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 
 const { getConnection } = require('./mongoMockConnection');
 const server = require('../api/app');
-const { CREATED, BAD_REQUEST, CONFLICT, UNAUTHORIZED } = require('../utils/http-status-code');
+const { CREATED, BAD_REQUEST, CONFLICT, UNAUTHORIZED, HTTP_OK_STATUS } = require('../utils/http-status-code');
 
 const { expect } = chai;
 
@@ -19,13 +19,14 @@ const TASK_EXAMPLE = { title: 'test task', description: 'testing', status: 'pend
 describe('Testes da rota "tasks".', () => {
   let connectionMock;
   let loginResponse;
+  let registerResponse;
 
   before(async () => {
     connectionMock = await getConnection();
     sinon.stub(MongoClient, 'connect').resolves(connectionMock);
     sinon.stub(console, 'log');
 
-    await chai.request(server).post('/users')
+    registerResponse = await chai.request(server).post('/users')
     .send({
       email: USER_EXAMPLE.email,
       name: USER_EXAMPLE.name,
@@ -127,7 +128,7 @@ describe('Testes da rota "tasks".', () => {
       });
     });
 
-    describe('Quando o "Authorization" for vazio.', () => {
+    describe('Quando o "authorization" for vazio.', () => {
       before(async () => {
         response = await chai.request(server)
         .post('/tasks')
@@ -146,12 +147,12 @@ describe('Testes da rota "tasks".', () => {
         expect(response.body).to.have.property('message');
       });
 
-      it('A propriedade "message" deve ser igual a ""status" is required"', () => {
+      it('A propriedade "message" deve ser igual a "Token not found"', () => {
         expect(response.body.message).to.be.equal('Token not found');
       });
     });
 
-    describe('Quando o "Authorization" for inválido.', () => {
+    describe('Quando o "authorization" for inválido.', () => {
       before(async () => {
         await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, '999');
       });
@@ -168,7 +169,93 @@ describe('Testes da rota "tasks".', () => {
         expect(response.body).to.have.property('message');
       });
 
-      it('A propriedade "message" deve ser igual a ""status" is required"', () => {
+      it('A propriedade "message" deve ser igual a "Expired or invalid token"', () => {
+        expect(response.body.message).to.be.equal('Expired or invalid token');
+      });
+    });
+  });
+
+  describe('Testes da listagem de "Tasks"', () => {
+    let response;
+
+    const getTasksRequest = async (token) => {
+      response = await chai.request(server)
+      .get('/tasks')
+      .set('authorization', token);
+    };
+
+    describe('Quando as "tasks" são listadas com sucesso.', () => {
+      before(async () => {
+        await getTasksRequest(loginResponse.body.token);
+      });
+
+      it('Deve retornar o código de status 200', () => {
+        expect(response).to.have.status(HTTP_OK_STATUS);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('array');
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body[0]).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "id"', () => {
+        expect(response.body[0]).to.have.property('id');
+      });
+
+      it('Deve possuir a propriedade "userId"', () => {
+        expect(response.body[0]).to.have.property('userId');
+        expect(response.body[0].userId).to.be.equal(registerResponse.insertedId.toString());
+      });
+
+      it('Deve possuir a propriedade "insertedDate"', () => {
+        expect(response.body[0]).to.have.property('insertedDate');
+      });
+    });
+
+    describe('Quando o "authorization" for vazio.', () => {
+      before(async () => {
+        response = await chai.request(server)
+        .get('/tasks');
+      });
+
+      it('Deve retornar o código de status 401', () => {
+        expect(response).to.have.status(UNAUTHORIZED);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a "Token not found"', () => {
+        expect(response.body.message).to.be.equal('Token not found');
+      });
+    });
+
+    describe('Quando o "authorization" for inválido.', () => {
+      before(async () => {
+        await getTasksRequest('999');
+      });
+
+      it('Deve retornar o código de status 401', () => {
+        expect(response).to.have.status(UNAUTHORIZED);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a "Expired or invalid token"', () => {
         expect(response.body.message).to.be.equal('Expired or invalid token');
       });
     });
