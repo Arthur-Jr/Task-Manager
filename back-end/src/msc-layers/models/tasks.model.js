@@ -8,6 +8,13 @@ const registerTaskModel = async (task) => {
   return insertedId;
 };
 
+const getAllUserTasksModel = async (userId) => {
+  const db = await connection();
+  const tasks = await db.collection(COLLECTION_NAME).find({ userId }).toArray();
+  return tasks;
+};
+
 module.exports = {
   registerTaskModel,
+  getAllUserTasksModel,
 };

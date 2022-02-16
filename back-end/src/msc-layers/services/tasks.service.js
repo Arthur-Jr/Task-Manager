@@ -1,7 +1,10 @@
 const joi = require('joi');
 
 const { BAD_REQUEST } = require('../../utils/http-status-code');
-const { registerTaskModel } = require('../models/tasks.model');
+const {
+  registerTaskModel,
+  getAllUserTasksModel,
+} = require('../models/tasks.model');
 
 const checkTaskInfo = (info) => {
   const { error } = joi.object({
@@ -32,6 +35,9 @@ const registerTaskService = async (userId, { title, description = '', status }) 
   return { id, ...task };
 };
 
+const getAllUserTasksService = async (userId) => getAllUserTasksModel(userId);
+
 module.exports = {
   registerTaskService,
+  getAllUserTasksService,
 };
