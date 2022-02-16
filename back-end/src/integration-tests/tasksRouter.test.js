@@ -63,7 +63,7 @@ describe('Testes da rota "tasks".', () => {
       before(async () => {
         await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, loginResponse.body.token);
 
-        taskId = registerTask.body.id;
+        taskId = response.body.id;
       });
 
       it('Deve retornar o código de status 201', () => {
@@ -295,12 +295,12 @@ describe('Testes da rota "tasks".', () => {
       });
 
       it('Deve possuir a propriedade "userId"', () => {
-        expect(response.body[0]).to.have.property('userId');
-        expect(response.body[0].userId).to.be.equal(registerResponse.body.user.id);
+        expect(response.body).to.have.property('userId');
+        expect(response.body.userId).to.be.equal(registerResponse.body.user.id);
       });
 
       it('Deve possuir a propriedade "insertedDate"', () => {
-        expect(response.body[0]).to.have.property('insertedDate');
+        expect(response.body).to.have.property('insertedDate');
       });
 
       it('Deve possuir o novo "title" e o novo "status', () => {
@@ -336,7 +336,7 @@ describe('Testes da rota "tasks".', () => {
 
     describe('Quando o campo "status" não for valido.', () => {
       before(async () => {
-        await registerTask(
+        await editTasksRequest(
           { title: 'Fazer testes', description: undefined, status: undefined },
           loginResponse.body.token
         );
