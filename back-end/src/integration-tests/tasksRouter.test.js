@@ -201,13 +201,13 @@ describe('Testes da rota "tasks".', () => {
         expect(response.body[0]).to.be.a('object');
       });
 
-      it('Deve possuir a propriedade "id"', () => {
-        expect(response.body[0]).to.have.property('id');
+      it('Deve possuir a propriedade "_id"', () => {
+        expect(response.body[0]).to.have.property('_id');
       });
 
       it('Deve possuir a propriedade "userId"', () => {
         expect(response.body[0]).to.have.property('userId');
-        expect(response.body[0].userId).to.be.equal(registerResponse.insertedId.toString());
+        expect(response.body[0].userId).to.be.equal(registerResponse.body.user.id);
       });
 
       it('Deve possuir a propriedade "insertedDate"', () => {
