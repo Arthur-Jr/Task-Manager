@@ -41,14 +41,14 @@ describe('Testes da rota "login"', () => {
   describe('Testes do login', () => {
     let response;
 
-    const login = async (email, password) => {
+    const loginRequest = async (email, password) => {
       response = await chai.request(server)
       .post('/login').send({ email, password, });
     }
 
     describe('Quando o login é feito com sucesso.', () => {
       before(async () => {
-        await login(USER_EXAMPLE.email, USER_EXAMPLE.password);
+        await loginRequest(USER_EXAMPLE.email, USER_EXAMPLE.password);
       });
 
       it('Deve retornar o código de status 200', () => {
@@ -70,7 +70,7 @@ describe('Testes da rota "login"', () => {
 
     describe('Quando o campo "email" não for valido.', () => {
       before(async () => {
-        await login('abc@', USER_EXAMPLE.password);
+        await loginRequest('abc@', USER_EXAMPLE.password);
       });
 
       it('Deve retornar o código de status 400', () => {
@@ -90,9 +90,31 @@ describe('Testes da rota "login"', () => {
       });
     });
 
+    describe('Quando o campo "email" está incorreto.', () => {
+      before(async () => {
+        await loginRequest('test1@email.com', USER_EXAMPLE.password);
+      });
+
+      it('Deve retornar o código de status 401', () => {
+        expect(response).to.have.status(UNAUTHORIZED);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a "Incorrect username or password"', () => {
+        expect(response.body.message).to.be.equal('Incorrect username or password');
+      });
+    });
+
     describe('Quando o campo "password" não for valido.', () => {
       before(async () => {
-        await login(USER_EXAMPLE.email, '123');
+        await loginRequest(USER_EXAMPLE.email, '123');
       });
 
       it('Deve retornar o código de status 400', () => {
@@ -114,7 +136,7 @@ describe('Testes da rota "login"', () => {
 
     describe('Quando o campo "password" está incorreto.', () => {
       before(async () => {
-        await login(USER_EXAMPLE.email, 'abcdef');
+        await loginRequest(USER_EXAMPLE.email, 'abcdef');
       });
 
       it('Deve retornar o código de status 401', () => {
