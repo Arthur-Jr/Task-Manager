@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 const connection = require('./connection');
 
 const COLLECTION_NAME = 'tasks';
@@ -14,7 +16,25 @@ const getAllUserTasksModel = async (userId) => {
   return tasks;
 };
 
+const getTaskByIdModel = async (taskId) => {
+  const db = await connection();
+  const task = await db.collection(COLLECTION_NAME).findOne({ _id: ObjectId(taskId) });
+  return task;
+};
+
+const editTaskModel = async (taskId, data) => {
+  const db = await connection();
+  const task = await db.collection(COLLECTION_NAME).findOneAndUpdate(
+    { _id: ObjectId(taskId) },
+    { $set: { ...data } },
+    { returnDocument: 'after' },
+  );
+  return task.value;
+};
+
 module.exports = {
   registerTaskModel,
   getAllUserTasksModel,
+  getTaskByIdModel,
+  editTaskModel,
 };
