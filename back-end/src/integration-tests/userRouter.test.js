@@ -109,22 +109,22 @@ describe('Testes da rota "users"', () => {
     describe('Quando o "email" já está cadastrado', () => {
       before(async () => {
         await registerUser(USER_EXAMPLE.email, USER_EXAMPLE.name, USER_EXAMPLE.password);
+      });
 
-        it('Deve retornar o código de status 409', () => {
-          expect(response).to.have.status(CONFLICT);
-        });
-  
-        it('Deve retornar um objeto', () => {
-          expect(response.body).to.be.a('object');
-        });
-  
-        it('Deve possuir a propriedade "message"', () => {
-          expect(response.body).to.have.property('message');
-        });
-  
-        it('A propriedade "message" deve ser igual a ""Email" already registered"', () => {
-          expect(response.body.message).to.be.equal('"Email" already registered');
-        });
+      it('Deve retornar o código de status 409', () => {
+        expect(response).to.have.status(CONFLICT);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a "Email already registered"', () => {
+        expect(response.body.message).to.be.equal('Email already registered');
       });
     });
   });
