@@ -33,7 +33,7 @@ describe('Testes da rota "tasks".', () => {
     });
 
     loginResponse = await chai.request(server)
-    .post('/login').send({ email, password, }).body.token;
+    .post('/login').send({ email: USER_EXAMPLE.email, password: USER_EXAMPLE.password, });
   });
 
   after(async () => {
@@ -53,13 +53,13 @@ describe('Testes da rota "tasks".', () => {
     const registerTask = async (description, title, status, token) => {
       response = await chai.request(server)
       .post('/tasks')
-      .set('Authorization', token)
+      .set('authorization', token)
       .send({ description, title, status });
     };
 
     describe('Quando a "task" é registrada com sucesso.', () => {
       before(async () => {
-        await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, loginResponse);
+        await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, loginResponse.body.token);
       });
 
       it('Deve retornar o código de status 201', () => {
@@ -75,13 +75,17 @@ describe('Testes da rota "tasks".', () => {
       });
 
       it('Deve possuir a propriedade "userId"', () => {
-        expect(response.body).to.have.property('useId');
+        expect(response.body).to.have.property('userId');
+      });
+
+      it('Deve possuir a propriedade "insertedDate"', () => {
+        expect(response.body).to.have.property('insertedDate');
       });
     });
 
     describe('Quando o campo "title" não for valido.', () => {
       before(async () => {
-        await loginRequest(TASK_EXAMPLE.description, undefined, TASK_EXAMPLE.status, loginResponse);
+        await registerTask(TASK_EXAMPLE.description, undefined, TASK_EXAMPLE.status, loginResponse.body.token);
       });
 
       it('Deve retornar o código de status 400', () => {
@@ -103,7 +107,7 @@ describe('Testes da rota "tasks".', () => {
 
     describe('Quando o campo "status" não for valido.', () => {
       before(async () => {
-        await loginRequest(TASK_EXAMPLE.description, TASK_EXAMPLE.title, undefined, loginResponse);
+        await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, undefined, loginResponse.body.token);
       });
 
       it('Deve retornar o código de status 400', () => {
@@ -125,7 +129,9 @@ describe('Testes da rota "tasks".', () => {
 
     describe('Quando o "Authorization" for vazio.', () => {
       before(async () => {
-        await loginRequest(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, undefined);
+        response = await chai.request(server)
+        .post('/tasks')
+        .send({ description: TASK_EXAMPLE.description, title: TASK_EXAMPLE.title, status: TASK_EXAMPLE.status });
       });
 
       it('Deve retornar o código de status 401', () => {
@@ -147,7 +153,7 @@ describe('Testes da rota "tasks".', () => {
 
     describe('Quando o "Authorization" for inválido.', () => {
       before(async () => {
-        await loginRequest(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, '999');
+        await registerTask(TASK_EXAMPLE.description, TASK_EXAMPLE.title, TASK_EXAMPLE.status, '999');
       });
 
       it('Deve retornar o código de status 401', () => {
