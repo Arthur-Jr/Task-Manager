@@ -73,3 +73,9 @@ npm install
   ```
     cd back-end/ && npm test
   ```
+  
+ * Teste com a Porcentagem de cobertura:
+
+    ```
+    cd back-end/ && npm run test:coverage
+    ```
