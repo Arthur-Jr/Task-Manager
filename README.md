@@ -44,7 +44,7 @@ npm install
 
 * Para rodar o back-end:
 
-  É necessário o mongodb estar ativado:
+  É necessário o mongodb estar ativo:
   ```bash
   sudo service mongod start 
   ```
