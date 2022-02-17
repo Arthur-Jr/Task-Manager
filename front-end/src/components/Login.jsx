@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+
 import api from '../api/api';
 
 function Login() {
+  const navigate = useNavigate();
+
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -10,6 +14,7 @@ function Login() {
     try {
       const { data } = await api.post('/login', { email: emailValue, password: passwordValue });
       localStorage.setItem('task-manager-token', data.token);
+      navigate('/tasks');
     } catch (error) {
       setErrorMessage(error.response.data.message);
     }
