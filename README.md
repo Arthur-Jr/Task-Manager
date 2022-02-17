@@ -15,7 +15,7 @@ Back-end:
 
 Copie e cole em seu terminal:
 
-```git clone git@github.com:Arthur-Jr/CookMaster.git ```
+```git clone git@github.com:Arthur-Jr/Task-Manager.git ```
 
 ## Instalando Dependências
 
