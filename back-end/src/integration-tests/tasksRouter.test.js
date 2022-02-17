@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 
 const { getConnection } = require('./mongoMockConnection');
 const server = require('../api/app');
-const { CREATED, BAD_REQUEST, CONFLICT, UNAUTHORIZED, HTTP_OK_STATUS } = require('../utils/http-status-code');
+const { CREATED, BAD_REQUEST, CONFLICT, UNAUTHORIZED, HTTP_OK_STATUS, NO_CONTENT } = require('../utils/http-status-code');
 
 const { expect } = chai;
 
@@ -391,6 +391,51 @@ describe('Testes da rota "tasks".', () => {
 
       it('A propriedade "message" deve ser igual a "invalid token"', () => {
         expect(response.body.message).to.be.equal('invalid token');
+      });
+    });
+  });
+
+  describe('Testes de remoção de "tasks".', () => {
+    let response;
+
+    const deleteTaskRequest = async (token) => {
+      response = await chai.request(server)
+      .delete(`/tasks/${taskId}`)
+      .set('authorization', token);
+    };
+
+    describe('Quando o "authorization" não for o do usuário correto.', async () => {  
+      const newLoginResponse = await chai.request(server)
+      .post('/login').send({ email: 'test2@email.com', password: USER_EXAMPLE.password, });
+
+      before(async () => {
+        await deleteTaskRequest(newLoginResponse.body.token);
+      });
+
+      it('Deve retornar o código de status 401', () => {
+        expect(response).to.have.status(UNAUTHORIZED);
+      });
+
+      it('Deve retornar um objeto', () => {
+        expect(response.body).to.be.a('object');
+      });
+
+      it('Deve possuir a propriedade "message"', () => {
+        expect(response.body).to.have.property('message');
+      });
+
+      it('A propriedade "message" deve ser igual a "invalid token"', () => {
+        expect(response.body.message).to.be.equal('invalid token');
+      });
+    });
+
+    describe('Quando a "task" é deletada com sucesso.', () => {
+      before(async () => {
+        await deleteTaskRequest(loginResponse.body.token);
+      });
+
+      it('Deve retornar o código de status 204', () => {
+        expect(response).to.have.status(NO_CONTENT);
       });
     });
   });
