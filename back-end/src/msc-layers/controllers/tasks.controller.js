@@ -1,10 +1,11 @@
 const rescue = require('express-rescue');
 
-const { CREATED, HTTP_OK_STATUS } = require('../../utils/http-status-code');
+const { CREATED, HTTP_OK_STATUS, NO_CONTENT } = require('../../utils/http-status-code');
 const {
   registerTaskService,
   getAllUserTasksService,
   editTaskService,
+  deleteTaskService,
 } = require('../services/tasks.service');
 
 const registerTaskController = rescue(async (req, res) => {
@@ -41,8 +42,17 @@ const editTaskController = rescue(async (req, res) => {
   return res.status(HTTP_OK_STATUS).json(editedTask);
 });
 
+const deleteTaskController = rescue(async (req, res) => {
+  const { params: { id }, body: { user } } = req;
+
+  await deleteTaskService(id, user.id);
+
+  return res.status(NO_CONTENT).send();
+});
+
 module.exports = {
   registerTaskController,
   getAllUserTasksController,
   editTaskController,
+  deleteTaskController,
 };

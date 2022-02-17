@@ -5,6 +5,7 @@ const {
   registerTaskController,
   getAllUserTasksController,
   editTaskController,
+  deleteTaskController,
 } = require('../controllers/tasks.controller');
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.post('/', registerTaskController);
 router.get('/', getAllUserTasksController);
 
 router.put('/:id', editTaskController);
+
+router.delete('/:id', deleteTaskController);
 
 module.exports = router;
