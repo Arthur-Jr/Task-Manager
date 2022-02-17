@@ -34,7 +34,7 @@ npm install
 
 Na raiz do projeto:
 ```bash
-npm install
+cd front-end/
 ``` 
 depois instale as dependências do front-end:
 ```bash
