@@ -1,14 +1,12 @@
+import { Route, Routes } from 'react-router-dom';
 import './CSS/App.css';
+import LoginRegister from './pages/LoginRegister.jsx';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Hello
-        </p>
-      </header>
-    </div>
+    <Routes>
+      <Route path='/' element={ <LoginRegister/> } />
+    </Routes>
   );
 }
 
