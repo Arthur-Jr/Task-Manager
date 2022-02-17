@@ -23,6 +23,7 @@ function Login() {
 
   return (
     <main>
+      <h3>Login</h3>
       <form onSubmit={ handleSubmit }>
         <label htmlFor="email">
           <input
@@ -31,6 +32,7 @@ function Login() {
             placeholder='email'
             value={ emailValue }
             onChange={ ({ target }) => setEmailValue(target.value) }
+            name='email'
             required
           />
         </label>
@@ -43,6 +45,7 @@ function Login() {
             placeholder='password'
             value={ passwordValue }
             onChange={ ({ target }) => setPasswordValue(target.value) }
+            name='password'
             required
           />
         </label>
