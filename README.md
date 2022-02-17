@@ -11,7 +11,7 @@ Front-end:
 Back-end:
 > Desenvolvido usando: NodeJS, ExpressJS, MongoDB, ES6
 
-## Clonando projeto
+## Clonando o projeto
 
 Copie e cole em seu terminal:
 
