@@ -67,7 +67,7 @@ npm install
   > Backend
   
   É necessário parar a aplicação do back-end para rodar os testes do mesmo, CTRL + C no terminal em que a aplicação do back-end
-  está rodando para para-lo.
+  está rodando ira para-lo.
   
   E agora só rodar o test:
   ```
