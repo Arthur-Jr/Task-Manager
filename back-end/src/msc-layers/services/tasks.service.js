@@ -6,12 +6,13 @@ const {
   getAllUserTasksModel,
   getTaskByIdModel,
   editTaskModel,
+  deleteTaskModel,
 } = require('../models/tasks.model');
 
 const notFoundThrow = () => {
-  const err = new Error('recipe not found');
+  const err = new Error('task not found');
   err.status = NOT_FOUND;
-  err.message = 'recipe not found';
+  err.message = 'task not found';
   throw err;
 };
 
@@ -68,8 +69,15 @@ const editTaskService = async (userId, { title, description = '', status }, task
   return editTaskModel(taskId, { title, description, status });
 };
 
+const deleteTaskService = async (taskId, userId) => {
+  await checkUserauthorization(taskId, userId);
+
+  await deleteTaskModel(taskId);
+};
+
 module.exports = {
   registerTaskService,
   getAllUserTasksService,
   editTaskService,
+  deleteTaskService,
 };

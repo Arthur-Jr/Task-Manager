@@ -32,9 +32,15 @@ const editTaskModel = async (taskId, data) => {
   return task.value;
 };
 
+const deleteTaskModel = async (taskId) => {
+  const db = await connection();
+  await db.collection(COLLECTION_NAME).deleteOne({ _id: ObjectId(taskId) });
+};
+
 module.exports = {
   registerTaskModel,
   getAllUserTasksModel,
   getTaskByIdModel,
   editTaskModel,
+  deleteTaskModel,
 };
