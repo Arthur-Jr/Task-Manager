@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const { UNAUTHORIZED } = require('../utils/http-status-code');
 
-const secret = process.env.JWT_SECRECT;
+const secret = process.env.JWT_SECRECT || 'tantoFaz';
 
 const jwtConfig = {
   expiresIn: '8h',
