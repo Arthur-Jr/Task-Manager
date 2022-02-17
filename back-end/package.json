@@ -5,6 +5,7 @@
   "main": "./src/api/app.js",
   "scripts": {
     "test": "mocha ./src/integration-tests/**/*$NAME*.{test,spec}.js --exit",
+    "test:coverage": "nyc --all npm test",
     "start": "node .",
     "debug": "nodemon ."
   },
@@ -31,6 +32,7 @@
     "mocha": "^9.2.0",
     "mongodb-memory-server": "^8.3.0",
     "nodemon": "^2.0.15",
+    "nyc": "^15.1.0",
     "sinon": "^13.0.1"
   }
 }
