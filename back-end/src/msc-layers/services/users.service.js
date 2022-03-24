@@ -1,5 +1,6 @@
 const joi = require('joi');
 const bcrypt = require('bcrypt');
+const { getToken } = require('../../jwt/jwt');
 
 const { BAD_REQUEST, CONFLICT } = require('../../utils/http-status-code');
 const { getUserByEmailModel, registerUserModel } = require('../models/users.model');
@@ -41,7 +42,10 @@ const registerUserService = async ({ email, name, password }) => {
   await isRegistred(email);
   const cryptedPassword = await cryptPassword(password);
 
-  return registerUserModel({ email, name, password: cryptedPassword });
+  const userId = registerUserModel({ email, name, password: cryptedPassword });
+  const token = getToken({ userId, email });
+
+  return { token };
 };
 
 module.exports = {
