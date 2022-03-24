@@ -6,9 +6,9 @@ const { registerUserService } = require('../services/users.service');
 const registerUserController = rescue(async (req, res) => {
   const { email, name, password } = req.body;
 
-  const userId = await registerUserService({ email, name, password });
+  const token = await registerUserService({ email, name, password });
 
-  return res.status(CREATED).json({ user: { id: userId, email } });
+  return res.status(CREATED).json(token);
 });
 
 module.exports = {
