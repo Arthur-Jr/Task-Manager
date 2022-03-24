@@ -53,12 +53,12 @@ describe('Testes da rota "users"', () => {
         expect(response.body).to.be.a('object');
       });
 
-      it('Deve possuir a propriedade "user"', () => {
-        expect(response.body).to.have.property('user');
+      it('Deve possuir a propriedade "token"', () => {
+        expect(response.body).to.have.property('token');
       });
 
-      it('Na propriedade "user" deve existir um "id"', () => {
-        expect(response.body.user).to.have.property('id');
+      it('A propriedade "token" deve ser uma string', () => {
+        expect(response.body.token).to.be.a('string');
       });
     });
 
